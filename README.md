@@ -3,8 +3,6 @@
 This project focuses on detecting unusual patterns in IoT sensor data that could indicate equipment faults or maintenance needs.  
 It combines both **statistical** and **deep learning** approaches — using **Isolation Forest** and an **LSTM Autoencoder** — to identify abnormal readings in multivariate time series data.
 
----
-
 ## Project Overview
 
 Modern manufacturing systems rely on IoT sensors that continuously record data such as temperature, vibration, or pressure. Detecting anomalies in this data early helps prevent costly failures and supports predictive maintenance.
@@ -58,47 +56,73 @@ The results (precision, recall, F1-score, and thresholds) are stored in:
 odels/out.json
 
 
-## Folder Structure
-
-anomaly_detect/
-│
-├── main.py
-├── README.md
-├── requirements.txt
-├── Time_Series_Anomaly_Detection_Report.docx
-│
-├── models/
-│   └── out.json
-│
-├── plots/
-│   ├── eda_preview.png
-│   ├── eda_corr.png
-│   ├── isolation_forest.png
-│   └── lstm_autoencoder.png
-│
-└── .gitignore
-
-
 ## How to Run
 
-### 1. Clone the repository
-```bash
-git clone https://github.com/dayanandahp/Time-Series-Anomaly-Detection-for-loT-Sensors.git
+Step Guide to Run the Project
 
-cd Folder name
+If you’d like to try this project on your own system, just follow these simple steps.
 
-2. Install dependencies
-pip install -r requirements.txt
+1. Get the project from GitHub
 
-3. Run the project
+Start by cloning the repository to your local machine.
+Open your terminal and run:
+git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git
+cd Your folder / repo
+
+2. Set up a virtual environment 
+
+python3 -m venv venv
+
+Activate it:
+
+Mac / Linux : source venv/bin/activate
+
+Windows: venv\Scripts\activate
+
+3. Install all required packages
+
+Once the environment is active, install the libraries used in this project:
+
+pip install numpy pandas matplotlib seaborn scikit-learn tensorflow statsmodels
+
+
+ (TensorFlow may take a few minutes to install.)
+
+4. Run the script
+
+Now you’re all set to run the main program:
+
 python main.py
 
-This will:
-Generate the synthetic dataset
-Train both models
-Save evaluation metrics and plots
+
+You’ll see short progress updates like:
+
+>> gen data
+>> clean & EDA
+>> make features
+>> iso forest
+IF eval: {'p': ..., 'r': ..., 'f1': ...}
+>> lstm ae
+AE eval: {'p': ..., 'r': ..., 'f1': ...}
+>> done. results in models/out.json
+
+5. Check the results
+
+Once it’s done running, you’ll find:
+
+Plots generated automatically:
+
+plots/eda_preview.png
+plots/eda_corr.png
+plots/isolation_forest.png
+plots/lstm_autoencoder.png
 
 
+These show how the data looks and where the anomalies were detected.
+
+Results file: models/out.json
+
+This file contains the precision, recall, F1-score, and threshold values for both models.
 
 Requirements
 
