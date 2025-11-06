@@ -8,15 +8,14 @@ import tensorflow as tf
 from tensorflow.keras import layers, models, callbacks
 from statsmodels.tsa.seasonal import seasonal_decompose
 
-# Setup
+
 np.random.seed(42)
-os.makedirs('models', exist_ok=True)
+os.makedirs('models', exist_ok=True)            # Setup
 os.makedirs('plots', exist_ok=True)
 
-# Generate synthetic multivariate time series data
 def gen_data(n=20000, s=3, ar=0.01):
-    # Create timestamp  
-    t = pd.date_range('2024-01-01', periods=n, freq='T')
+    
+    t = pd.date_range('2024-01-01', periods=n, freq='T')         # Create timestamp 
     df = pd.DataFrame({'time': t})
 
 
@@ -27,8 +26,8 @@ def gen_data(n=20000, s=3, ar=0.01):
         ns = 0.5 * np.random.randn(n)                   # random noise
         df[f's{i+1}'] = 10 + tr + se + ns
 
-    #  random anomalies
-    lbl = np.zeros(n, int)
+   
+    lbl = np.zeros(n, int)           #  random anomalies
     k = max(1, int(n * ar))
     for _ in range(k):
         st = np.random.randint(0, n - 50)
@@ -40,12 +39,12 @@ def gen_data(n=20000, s=3, ar=0.01):
             df.at[idx, f's{sid+1}'] += np.random.uniform(8, 20)
             lbl[idx] = 1
 
-        elif tp == 'shf':  # level shift
+        elif tp == 'shf':  
             ln = np.random.randint(10, 200)
             df.loc[st:st+ln, f's{sid+1}'] += np.random.uniform(-6, 6)
             lbl[st:st+ln+1] = 1
 
-        else:  # dropout
+        else:  
             ln = np.random.randint(1, 20)
             df.loc[st:st+ln, f's{sid+1}'] = np.nan
             lbl[st:st+ln+1] = 1
@@ -53,9 +52,9 @@ def gen_data(n=20000, s=3, ar=0.01):
     df['y'] = lbl
     return df
 
-#  visualization
+
 def clean_eda(df, scols):
-    df = df.sort_values('time').reset_index(drop=True)
+    df = df.sort_values('time').reset_index(drop=True)          #  visualization
     df[scols] = df[scols].ffill().bfill().fillna(df[scols].median())
 
     print("Dataset shape:", df.shape)
@@ -133,8 +132,8 @@ def seq_make(x, l=30):
     return np.array([x[i:i+l] for i in range(len(x)-l+1)])
 
 
-# Evaluate model 
-def eval_m(y, p):
+
+def eval_m(y, p):           # Evaluate model 
     p1, r1, f1, _ = precision_recall_fscore_support(y, p, average='binary', zero_division=0)
     return {'precision': float(p1), 'recall': float(r1), 'f1_score': float(f1)}
 
@@ -163,16 +162,14 @@ def main():
     df = feat_make(df, scols)
     fcols = [c for c in df.columns if any(s in c for s in scols)]
 
-    # Split data (70% train, 30% test)
-    i = int(len(df) * 0.7)
+    
+    i = int(len(df) * 0.7)      # Split data (70% train, 30% test)
     tr, te = df.iloc[:i], df.iloc[i:]
     x1, x2 = tr[fcols].values, te[fcols].values
     y2 = te['y'].values
     x1s, x2s = scale(x1, x2)
 
-    # ----------------------------
-    # Model 1: Isolation Forest
-    # ----------------------------
+ 
     print(">> Training Isolation Forest...")
     m1 = iso_train(x1s)
     p2 = (m1.predict(x2s) == -1).astype(int)
